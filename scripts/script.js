@@ -144,7 +144,8 @@
 
 	function lognotes(slideNumber) {
 		if (window.console && slideList[slideNumber]) {
-			var notes = document.querySelector('#' +slideList[slideNumber].id + ' .notes');
+      var selector = '#' +slideList[slideNumber].id + ' .notes';
+			var notes = document.querySelector(selector);
 			if (notes) {
 				console.info(notes.innerHTML.replace(/\n\s+/g,'\n'));
 			}
