@@ -1,0 +1,439 @@
+<!DOCTYPE HTML>
+<html lang="en-US" class="fade">
+<!-- 
+  ^ You can control a few things with the <html> element's classes:
+
+  "fade"      - smooth fade between slides
+  "nonumbers" - remove the slide numbering after the progress bar
+-->
+
+<head>
+  <title>Offline Web</title>
+  <!-- 
+    ^ Don't forget a good title - they show up as bookmarks and in Google 
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1274, user-scalable=no">
+  <link rel="stylesheet" href="themes/mozilla/styles/style.css">
+  <style type="text/css">
+    /* Add your own styles here */
+  </style>
+</head>
+<body class="list">
+
+  <header class="caption">
+    <h1>Offline Web</h1>
+    <p class="footer">Julien Wajsberg, <a
+      href="http://twitter.com/jwajsberg">@jwajsberg</a> or julien AT
+    mozilla.com</p>
+  </header>
+
+<!-- 
+  The following is a slide, it needs a class of "slide" and it doesn't 
+  hurt to keep the right semantic elements in there, too.
+  IMPORTANT: each slide needs its own unique ID - this will become its
+  URL and this is how this slide system works!
+-->
+
+  <div id="cover" class="slide"><div>
+    <section>
+      <header>
+        <h2>Offline Web</h2>
+      </header>
+      <small class="byline">
+        Julien Wajsberg, Mozilla, Firefox OS App Days, Paris, 26 janvier 2013 
+      </small>
+    <footer class="notes">
+    </footer>
+    </section>
+  </div></div>
+
+
+  <div id="s0" class="slide"><div>
+    <section>
+      <header>
+        <h2>Offline Web</h2>
+      </header>
+      <ul class='inline'>
+      <li>Web Storage</li>
+      <li>AppCache</li>
+      <li>IndexedDB</li>
+      </ul> 
+      <footer class="notes">
+      </footer>
+    </section>
+  </div></div>
+<div id="s0-1" class="slide shout"><div>
+  <section>
+    <header>
+      <h2>Questions ?</h2>
+    </header>
+    <footer class="notes">
+    </footer>
+  </section>
+</div></div>
+
+
+  <div id="s1" class="slide"><div>
+    <section>
+      <header>
+        <h2>Web Storage: localStorage, sessionStorage</h2>
+      </header>
+      <ul>
+        <li>permet de stocker des choses dans le navigateur, côté client</li>
+        <li>système clé/valeur à base de chaînes de caractères</li>
+        <li>localStorage pour conserver sans limite de temps</li>
+        <li>sessionStorage pour des données temporaires</li>
+        <li>soumis à la limitation de même origine</li>
+      </ul> 
+      <footer class="notes">
+      <p>C'est une W3C candidate recommandation.</p>
+      <p>sessionStorage conserve les données tant que la page est "vivante".</p>
+      </footer>
+    </section>
+  </div></div>
+
+  <div id="s2" class="slide"><div>
+    <section>
+      <header>
+        <h2>du vrai code</h2>
+      </header>
+      <pre class='longlist'>
+        <code><mark>localstorage.setitem</mark>('downloading', json.stringify(true));</code>
+        <code>var downloading = json.parse(<mark>localstorage.getitem</mark>('downloading'));</code>
+        <code>if (downloading) { do stuff }</code>
+      </pre>
+      <footer class="notes">
+      </footer>
+    </section>
+</div></div>
+
+  <div id="s3" class="slide"><div>
+    <section>
+      <header>
+        <h2>Web Storage: quelques inconvénients</h2>
+      </header>
+      <ul>
+        <li>C'est que clé/valeur</li>
+        <li>Chaînes de caractères&nbsp;: on est obligé de sérialiser et
+        désérialiser en permanence des objets</li>
+        <li>C'est synchrone&nbsp;: peut poser donc des problèmes de perf</li>
+      </ul> 
+      <footer class="notes">
+      </footer>
+    </section>
+  </div></div>
+
+  <div id="s4" class="slide"><div>
+    <section>
+      <header>
+        <h2>AppCache (Application Cache)</h2>
+      </header>
+      <ul>
+        <li>C'est bien moins compliqué que ce qu'on a bien voulu dire</li>
+        <li>... du moment qu'on respecte bien certaines règles</li>
+      </ul> 
+      <footer class="notes">
+      </footer>
+    </section>
+</div></div>
+
+<div id="s5" class="slide"><div>
+  <section>
+    <header>
+      <h2>AppCache&nbsp;: quelques règles</h2>
+    </header>
+    <ul class='longlist'>
+      <li>Configurer un AppCache manifest dans la balise
+      HTML</li>
+      <li>Le servir avec le type mime text/cache-manifest</li>
+      <li>Mettre une date d'expiration très proche:
+      <pre>
+      <code>ExpiresByType text/cache-manifest "<mark>access</mark>"</code></pre></li>
+      <li>avoir une partie&nbsp;:
+      <pre>
+      <code>NETWORK:</code>
+      <code>*</code></pre></li>
+      <li>avoir un commentaire désignant la version</li>
+    </ul>
+    <footer class="notes">
+    <p>Sans ce mime type, il est ignoré</p>
+    <p>Date d'expiration == on va pas aller le chercher</p>
+    <p>NETWORK * permet de dire "hey mec, j'ai pas spécifié cette page dans mon
+    manifest alors tu vas aller me la chercher en ligne"</p>
+    <p>incrémenter le commentaire permet de modifier le manifest</p>
+    </footer>
+  </section>
+</div></div>
+
+<div id='s6' class='slide'><div>
+    <section>
+    <header>
+    <h2>AppCache&nbsp;: attention</h2>
+    </header>
+    <ul>
+      <li>Ça se comporte comme un cache additionnel</li>
+      <li>C'est tout ou rien</li>
+      <li>Les redirections sont traitées comme des échecs</li>
+      <li>Après avoir téléchargé, c'est pas automatiquement affiché</li>
+      <li>À la moindre erreur, tout est jeté</li>
+    </ul>
+
+    <footer class="notes">
+      <p>cache additionnel == on récupère le manifest et les ressources comme
+      des ressources HTTP
+      classiques, avec éventuellement des requêtes conditionnelles (ETag et
+      Last-Modified). + un hash pour le manifest</p>
+      <p>dès que le manifest est modifié, on va tout récupérer, d'où
+      l'importance de la bonne gestion du cache pour les ressources</p>
+      <p>redirections: pour traiter les portails captifs; et du coup faut les
+      faire en JS ou avec un meta</p>
+      <p>Il faut utiliser swapCache quand on reçoit l'événement updateready</p>
+    </footer>
+    </section>
+</div></div>
+
+<div id='s7' class='slide'><div>
+    <section>
+    <header>
+    <h2>AppCache&nbsp;: ya des trucs cools</h2>
+    </header>
+    <ul>
+      <li>On reçoit des événements à chaque changement d'état</li>
+      <li>Ça marche&nbsp;!</li>
+    </ul>
+
+    <footer class="notes">
+    <p>événements: checking, downloading, updateready, progress, error, etc</p>
+    </footer>
+    </section>
+</div></div>
+
+<div id='s7-1' class='slide'><div>
+    <section>
+      <header>
+        <h2>du vrai code</h2>
+      </header>
+      <pre>
+      <code><mark>CACHE MANIFEST</mark></code>
+      <code>#v15</code>
+      <code>index.html</code>
+      <code>style/icons/Blank.png</code>
+      <code>js/install.js</code>
+      <code><mark>NETWORK:</mark></code>
+      <code>*</code>
+      </pre>
+      <footer class="notes">
+      </footer>
+    </section>
+
+</div></div>
+<div id='s8' class='slide'><div>
+    <section>
+    <header>
+    <h2>AppCache&nbsp;: des ressources utiles</h2>
+    </header>
+    <ul>
+      <li><a
+        href='https://developer.mozilla.org/en-US/docs/HTML/Using_the_application_cache'>l'article
+        sur MDN
+      </a></li>
+      <li><a
+        href='http://www.alistapart.com/articles/application-cache-is-a-douchebag/'>l'article
+        fondateur de Jake Archibald</a></li>
+      <li><a
+        href='http://www.html5rocks.com/en/tutorials/appcache/beginner/'>Tutoriel
+        pour débuter</a></li>
+    </ul>
+
+    <footer class="notes">
+    </footer>
+    </section>
+</div></div>
+
+<div id='s9' class='slide'><div>
+    <section>
+    <header>
+    <h2>IndexedDB</h2>
+    </header>
+    <ul>
+      <li>On a besoin d'une API de stockage plus intéressante</li>
+      <li>IndexedDB implémente une véritable base de données à l'intérieur du
+      navigateur.</li>
+    </ul>
+
+    <footer class="notes">
+    </footer>
+    </section>
+</div></div>
+
+<div id='s10' class='slide'><div>
+    <section>
+    <header>
+    <h2>IndexedDB&nbsp;: les concepts</h2>
+    </header>
+    <ul class='inline'>
+      <li>base de données NoSQL, magasin d'objets, transaction, requête</li>
+    </ul>
+
+    <footer class="notes">
+    <p>concept des versions, asynchronisme</p>
+    </footer>
+    </section>
+</div></div>
+
+<div id='s11' class='slide'><div>
+    <section>
+    <header>
+    <h2>IndexedDB&nbsp;: transactions</h2>
+    </header>
+    <ul>
+      <li>readonly</li>
+      <li>readwrite</li>
+      <li>versionchange</li>
+    </ul>
+
+    <footer class="notes">
+    <p>une transaction versionchange est uniquement créée avec
+    onupgradeneeded</p>
+    </footer>
+    </section>
+</div></div>
+<div id='s12' class='slide'><div>
+    <section>
+    <header>
+    <h2>IndexedDB&nbsp;: un peu de code</h2>
+    </header>
+    <pre style='font-size: .7em'>
+<code>var idbReq = <mark>indexedDB.open</mark>('Database Name');</code>
+<code>idbReq.onsuccess = function(event) {</code>
+<code>   var db = this.result;</code>
+<code>   var trans = db.<mark>transaction</mark>(['monster_store','hero_store'], <mark>"readwrite"</mark>);</code>
+<code>   var store = trans.<mark>objectStore</mark>('monster_store');</code>
+<code>   var req = store.<mark>put</mark>(value, key);</code>
+<code>   req.onsuccess = ...</code>
+<code>   req.onerror = ...</code>
+<code>};</code>
+<code>idbReq.onerror = function(event) {</code>
+<code>    ...</code>
+<code>};</code>
+</pre>
+    <footer class="notes">
+    </footer>
+    </section>
+</div></div>
+<div id='s12.1' class='slide'><div>
+    <section>
+    <header>
+    <h2>IndexedDB&nbsp;: clé primaire</h2>
+    </header>
+    <ul>
+      <li>dans l'objet <em>keypath</em></li>
+      <li>en dehors de l'objet</li>
+      <li>autoincrémenté ou non <em>autoIncrement</em></li>
+    </ul>
+
+    <footer class="notes">
+    </footer>
+    </section>
+</div></div>
+<div id='s12.2' class='slide'><div>
+    <section>
+    <header>
+    <h2>IndexedDB et indexes&nbsp;: du code</h2>
+    </header>
+    <pre style='font-size: .5em'>
+<code>const customerData = [</code>
+<code>  { ssn: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },</code>
+<code>  { ssn: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }</code>
+<code>];</code>
+<code>var request = indexedDB.open(dbName, <mark>2</mark>);</code>
+<code>request.<mark>onupgradeneeded</mark> = function(event) {</code>
+<code>  var db = event.target.result; // or this.result</code>
+<code> </code>
+<code>  // "ssn" is guaranteed to be unique</code>
+<code>  var objectStore = db.<mark>createObjectStore</mark>("customers", { <mark>keyPath</mark>: "ssn" });</code>
+<code> </code>
+<code>  // Create an index to search customers by name.</code>
+<code>  objectStore.<mark>createIndex</mark>("name", "name", { unique: false });</code>
+<code> </code>
+<code>  // Create an index to search customers by email. We want to ensure that</code>
+<code>  // no two customers have the same email, so use a unique index.</code>
+<code>  objectStore.createIndex("email", "email", { unique: true });</code>
+<code> </code>
+<code>  // Store values in the newly created objectStore.</code>
+<code>  customerData.forEach(objectStore.add.bind(objectStore));</code>
+<code>};</code>
+    </pre>
+    <footer class="notes">
+<p>la version est un entier</p>
+    </footer>
+    </section>
+</div></div>
+<div id='s12.3' class='slide'><div>
+    <section>
+    <header>
+    <h2>IndexedDB&nbsp;: des inconvénients ?</h2>
+    </header>
+    <ul>
+      <li>support multi navigateurs</li>
+      <li>pas de SQL, pas de jointure</li>
+      <li>verbosité</li>
+      <li>la spec changeait souvent jusqu'à récemment</li>
+    </ul>
+
+    <footer class="notes">
+<p><a href='https://hacks.mozilla.org/2012/07/using-indexeddb-api-today-the-indexeddb-polyfills/'>Un shim existe</a> pour supporter
+IndexedDB par dessus WebSQL Database.</p>
+<p>pas de  SQL =&gt; pas de SQL injection</p>
+<p>pas de jointure =&gt; ok, mais on en a pas besoin tout le temps</p>
+    </footer>
+    </section>
+</div></div>
+<div id='s13' class='slide'><div>
+    <section>
+    <header>
+    <h2>IndexedDB&nbsp;: des ressources</h2>
+    </header>
+    <ul>
+      <li><a
+        href='https://developer.mozilla.org/en-US/docs/IndexedDB/Using_IndexedDB'>Using
+        IndexedDB sur MDN</a></li>
+     <li><a href='https://github.com/mozilla-b2g/gaia/blob/master/shared/js/async_storage.js'>Async Storage dans Firefox OS</a></li>
+    </ul>
+
+    <footer class="notes">
+    </footer>
+    </section>
+</div></div>
+
+<div id="apps" class="slide"><div>
+  <section>
+    <header>
+      <h2>quelques trucs sur les apps</h2>
+      </header>
+      <ul>
+        <li>regardez vos logs</li>
+      </ul>
+    <footer class="notes">
+    </footer>
+  </section>
+</div></div>
+
+<div id="questions" class="slide shout"><div>
+  <section>
+    <header>
+      <h2>Questions ?</h2>
+    </header>
+    <footer class="notes">
+    </footer>
+  </section>
+</div></div>
+  <div class="progress"><div></div></div>
+  <!-- 
+    ^ don't like a progress bar? just delete this DIV
+  -->
+  <script src="scripts/script.js"></script>
+  <!-- Copyright © 2010–2012 Vadim Makeev — pepelsbey.net -->
+</body>
+</html>
